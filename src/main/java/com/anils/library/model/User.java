@@ -5,12 +5,13 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class User {
+public class User implements Identifiable {
 
     public static final int MAX_BORROWED_BOOKS = 5;
 
     private long id;
     private String name;
+    private double balance;
     private final Set<Long> borrowedBookIds = new HashSet<>();
 
     public User(long id, String name) {
@@ -32,6 +33,26 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    /** Ödünç alırken kesilen ücret (bakiyeden düşülür). */
+    public void applyBorrowFee(double fee) {
+        if (fee < 0) {
+            throw new IllegalArgumentException("fee must be non-negative");
+        }
+        balance -= fee;
+    }
+
+    /** İade sırasında ücretin geri yüklenmesi. */
+    public void refundBorrowFee(double fee) {
+        if (fee < 0) {
+            throw new IllegalArgumentException("fee must be non-negative");
+        }
+        balance += fee;
     }
 
     /**
@@ -85,6 +106,7 @@ public class User {
         return "User{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", balance=" + balance +
                 ", borrowedBookIds=" + borrowedBookIds +
                 '}';
     }
